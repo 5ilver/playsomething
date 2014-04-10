@@ -1,0 +1,18 @@
+% NS_B
+<s>        sil
+
+% NS_E
+</s>        sil
+
+% COMMAND
+UP	ah p
+DOWN	d aw n
+LEFT	l eh f
+RIGHT	r ay t
+CLICK	k l ih k
+PLAY	p l ey  
+GO	g ow
+STOP	s t eh p
+
+% ID
+COMP	k ax m p

@@ -1,0 +1,7 @@
+-nolog				                     # disable all logs
+-quiet				                     # output less log
+#-input mic    			                     # live microphone
+-v sample.dict			                     # word dictionary
+-dfa sample.dfa	                                     # specify DFA and dictionary separately
+-h hmmdefs       # acoustic HMM (ascii or Julius binary)
+-hlist tiedlist  # HMMList to map logical phone to physical
