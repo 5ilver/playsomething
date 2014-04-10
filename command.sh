@@ -1,6 +1,6 @@
 #!/bin/bash
 function listen() {
-adintool -quiet -in mic -out file -filename file -oneshot
+adinrec file.wav
 }
 which ffmpeg && encoder="ffmpeg"
 which avconv && encoder="avconv"
@@ -8,7 +8,8 @@ if [ "$encoder" == "" ];then
 	echo "You need a flac encoder. Install ffmpeg or libav-tools (avconv)"
 	exit 1
 fi;
-while listen; do 
+while true; do 
+listen
 ACTION=`julius -quiet -input rawfile -filelist files -C sample.jconf | grep sentence1: | sed -e 's/sentence1: <s> \(.*\) <\/s>/\1/'`
 case $ACTION in
 	"COMP PLAY")
@@ -30,7 +31,7 @@ case $ACTION in
 		pkill vlc
 		;;
 *)
-		echo "wtf..."
+		flite -t  "wtf..."
 		;;
 esac
 done;
