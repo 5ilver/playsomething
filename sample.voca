@@ -5,25 +5,36 @@
 </s>        sil
 
 % COMMAND
-UP	ah p
-DOWN	d aw n
-LEFT	l eh f
-RIGHT	r ay t
 CLICK	k l ih k
 PLAY	p l ey  
 GO	g ow
 STOP	s t eh p
+PHONE f ow n
+CALL k ao l
+GET g eh t 
+DIAL        d ay ax l
 
 % ID
 COMP	k ax m p
+ME          m iy
+KENNETH k eh n ix th
+KEN k eh n
+MACDOUGALL    m ax k d uw g ax l
+MACLEAN       m ax k l ey n
+STEVEN s t iy v ax n
+STEVE s t iy v
+YOUNG        y ah ng
+FOUR       f ao r
+BOB        b aa b
+JOHNSTON   jh aa n s t ax n
+JOHN       jh aa n
+JORDAN     jh ao r d ax n
+JOE        jh ow
 
-% NUM
-FIVE        f ay v
-NINE        n ay n
-EIGHT        ey t
-OH        ow
-ONE        w ah n
-SEVEN        s eh v ih n
-SIX        s ih k s
-THREE        th r iy
-TWO        t uw
+
+%OBJECT
+MUSIC      m uw s ax k
+UP	ah p
+DOWN	d aw n
+LEFT	l eh f
+RIGHT	r ay t
