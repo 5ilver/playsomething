@@ -20,6 +20,7 @@ fi;
 while true; do 
 listen
 ACTION=`julius -quiet -input rawfile -filelist files -C sample.jconf | grep sentence1: | sed -e 's/sentence1: <s> \(.*\) <\/s>/\1/'`
+echo "heard $ACTION"
 case $ACTION in
 	"JORDAN")
 		let "resp = $RANDOM % 5 +1"
@@ -51,6 +52,7 @@ case $ACTION in
 	*)
 		case $lastcommand in
 			"PLAY MUSIC")
+				flite -t "searching"
 				rm file.flac  > /dev/null 2>&1
 				$encoder -i file.wav -ar 16000 -acodec flac file.flac > /dev/null 2>&1
 				wget -q -U "Mozilla/5.0" --post-file file.flac --header "Content-Type: audio/x-flac; rate=16000" -O - "http://www.google.com/speech-api/v1/recognize?lang=en-us&client=chromium" | cut -d\" -f12  >stt.txt
