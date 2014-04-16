@@ -16,13 +16,14 @@ fi;
 #which flite || echo "You need flite. Install it." && exit 1
 
 
+name="JORDAN"
 
 while true; do 
 listen
 ACTION=`julius -quiet -input rawfile -filelist files -C sample.jconf | grep sentence1: | sed -e 's/sentence1: <s> \(.*\) <\/s>/\1/'`
 echo "heard $ACTION"
 case $ACTION in
-	"JORDAN")
+	"$name")
 		let "resp = $RANDOM % 5 +1"
 		case $resp in
 			1) flite -t "What?" ;;
@@ -41,13 +42,32 @@ case $ACTION in
 			lastcommand=""
 		fi
 		;;
-	"JORDAN PLAY MUSIC")
+	"$name PLAY MUSIC")
 		flite -t "What should I play?" 
 		lastcommand="PLAY MUSIC"
 		;;
 	"STOP MUSIC")
 		flite -t "Killing VLC instances"
 		pkill vlc
+		;;
+	"$name STOP MUSIC")
+		flite -t "Killing VLC instances"
+		pkill vlc
+		;;
+	"WHAT TIME")
+ 		flite -t "The time is $(date "+%l:%M %p")."
+		;;
+	"$name WHAT TIME")
+		flite -t "It is $(date "+%l:%M %p")."
+		;;
+	"WHAT DAY")
+		flite -t "Today is $(date "+%A %B %e")"
+		;;
+	"$name WHAT DAY")
+		flite -t "Today is $(date "+%A %B %e")"
+		;;
+	"COM PU TER")
+		flite -t "My name is $name"
 		;;
 	*)
 		case $lastcommand in
@@ -58,15 +78,14 @@ case $ACTION in
 				wget -q -U "Mozilla/5.0" --post-file file.flac --header "Content-Type: audio/x-flac; rate=16000" -O - "http://www.google.com/speech-api/v1/recognize?lang=en-us&client=chromium" | cut -d\" -f12  >stt.txt
 				playlist="$(curl http://www.reddit.com/r/$(cat stt.txt | awk '{print tolower($0)}' | tr -d ' ')/  | grep -o '<a .*href=.*>' | sed -e 's/<a /\n<a /g' | sed -e 's/<a .*href=['"'"'"]//' -e 's/["'"'"'].*$//' -e '/^$/ d' | grep "http://www.youtube\|https://www.youtube" | sed 's/https:/http:/g' | sort | uniq | sort -R )" 
  				if [ "$playlist" ]; then
-  					#flite -t "Playing youtube link from R slash $(cat stt.txt)" 
-  					#printf "$playlist" | vlc - &
-					printf $playlist
+  					flite -t "Playing youtube link from R slash $(cat stt.txt)" 
+					#printf $playlist
 					playsong="$(printf $playlist | head -1)"
-					echo $playsong
+					#echo $playsong
 					playfile="$(youtube-dl -x --get-filename $playsong)"
-					echo $playfile
+					#echo $playfile
 					youtube-dl -x -w "$playsong"
-					vlc "$playfile" 
+					vlc <<<  "$playfile" 
 				else
 					flite -t "No links found"
 				fi

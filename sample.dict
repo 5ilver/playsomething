@@ -8,7 +8,10 @@
 2	[CALL]	k ao l
 2	[GET]	g eh t
 2	[DIAL]	d ay ax l
-3	[COMP]	k ax m p
+2	[WHAT]	w ah t
+2	[LIGHTS]	l ay t s
+2	[PU]	p y uw
+3	[COM]	k ax m
 3	[ME]	m iy
 3	[KENNETH]	k eh n ix th
 3	[KEN]	k eh n
@@ -28,3 +31,7 @@
 4	[DOWN]	d aw n
 4	[LEFT]	l eh f
 4	[RIGHT]	r ay t
+4	[TIME]	t ay m
+4	[WEEK]	w ey k
+4	[DAY]	d ey
+4	[TER]	t eh r
