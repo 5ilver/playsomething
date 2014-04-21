@@ -1,6 +1,7 @@
 #!/bin/bash
 function listen() {
-adinrec file.wav > /dev/null 2>&1
+adinrec file.wav
+#adinrec file.wav > /dev/null 2>&1
 }
 
 
@@ -11,9 +12,18 @@ if [ "$encoder" == "" ];then
 	echo "You need a flac encoder. Install ffmpeg or libav-tools (avconv)"
 	exit 1
 fi;
-#which julius || echo "You need julius. Install julius and julias-voxforge" && exit 1
-#which curl || echo "You need curl. Install it." && exit 1
-#which flite || echo "You need flite. Install it." && exit 1
+if [ ! $(which julius) ]; then
+	echo "You need julius. Install julius and julias-voxforge" 
+	exit 1
+fi
+if [ ! $(which curl) ]; then
+	echo "You need curl." 
+	exit 1
+fi
+if [ ! $(which flite) ]; then
+	echo "You need flite." 
+	exit 1
+fi
 
 
 name="JORDAN"
@@ -76,19 +86,7 @@ case $ACTION in
 				rm file.flac  > /dev/null 2>&1
 				$encoder -i file.wav -ar 16000 -acodec flac file.flac > /dev/null 2>&1
 				wget -q -U "Mozilla/5.0" --post-file file.flac --header "Content-Type: audio/x-flac; rate=16000" -O - "http://www.google.com/speech-api/v1/recognize?lang=en-us&client=chromium" | cut -d\" -f12  >stt.txt
-				playlist="$(curl http://www.reddit.com/r/$(cat stt.txt | awk '{print tolower($0)}' | tr -d ' ')/  | grep -o '<a .*href=.*>' | sed -e 's/<a /\n<a /g' | sed -e 's/<a .*href=['"'"'"]//' -e 's/["'"'"'].*$//' -e '/^$/ d' | grep "http://www.youtube\|https://www.youtube" | sed 's/https:/http:/g' | sort | uniq | sort -R )" 
- 				if [ "$playlist" ]; then
-  					flite -t "Playing youtube link from R slash $(cat stt.txt)" 
-					#printf $playlist
-					playsong="$(printf $playlist | head -1)"
-					#echo $playsong
-					playfile="$(youtube-dl -x --get-filename $playsong)"
-					#echo $playfile
-					youtube-dl -x -w "$playsong"
-					vlc <<<  "$playfile" 
-				else
-					flite -t "No links found"
-				fi
+				./playsome.sh "$(cat stt.txt)"
 				lastcommand=""
 				;;
 			*)
