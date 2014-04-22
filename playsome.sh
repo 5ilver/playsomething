@@ -6,7 +6,7 @@ if [ "$playlist" ]; then
 	echo "$playlist"
 	echo "$playlist" | while read playsong; do 
 		echo $playsong
-		playfile="$(youtube-dl -x --get-filename $playsong)"
+		playfile="$(youtube-dl -x --get-filename "$playsong")"
 		echo $playfile
 		youtube-dl -q -x -w "$playsong"
 		cvlc "$playfile" "vlc://quit"
