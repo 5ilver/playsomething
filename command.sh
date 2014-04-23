@@ -8,6 +8,19 @@ function julius_speech() {
 command=`julius -quiet -input rawfile -filelist files -C sample.jconf | grep sentence1: | sed -e 's/sentence1: <s> \(.*\) <\/s>/\1/'`
 ACTION=$command
 echo "Julius heard $command"
+
+if [ "${command#$name}" == "$command" ]; then
+	namesaid="false"
+	echo "Didn't hear my name though"
+else
+	namesaid="true"
+	command="${command#$name }"
+	echo "Heard my name. New command \"$command\""
+fi
+if [ "$lastcommand" == "name"]; then
+	echo "last command was my name, setting command name flag true"
+	namesaid="true"
+fi
 }
 
 function google_speech() {
@@ -51,8 +64,31 @@ name="JORDAN"
 
 while true; do 
 listen
-julius_speech $ACTION
-case $ACTION in
+julius_speech
+case $command in
+	"PLAY MUSIC")
+		echo "Playing music!"
+		if [ "$namesaid" == "true" ]; then
+			flite -t "What would you like me to play?" 
+			lastcommand="$command"
+		else
+			echo "Need to hear my name to play music"
+			lastcommand=""
+		fi
+		;;
+	"STOP MUSIC")
+		flite -t "Killing VLC instances"
+		pkill vlc
+		;;
+	"WHAT TIME")
+ 		flite -t "The time is $(date "+%l:%M %p")."
+		;;
+	"WHAT DAY")
+		flite -t "Today is $(date "+%A %B %e")"
+		;;
+	"COM PU TER")
+		flite -t "My name is $name"
+		;;
 	"$name")
 		let "resp = $RANDOM % 5 +1"
 		case $resp in
@@ -62,43 +98,8 @@ case $ACTION in
 			4) flite -t "Can I help you?" ;;
 			5) flite -t "Need something?" ;;
 		esac
-		lastcommand="name"
 		;;
-	"PLAY MUSIC")
-		if [ $lastcommand = "name" ]; then
-			flite -t "What would you like me to play?" 
-			lastcommand="PLAY MUSIC"
-		else
-			lastcommand=""
-		fi
-		;;
-	"$name PLAY MUSIC")
-		flite -t "What should I play?" 
-		lastcommand="PLAY MUSIC"
-		;;
-	"STOP MUSIC")
-		flite -t "Killing VLC instances"
-		pkill vlc
-		;;
-	"$name STOP MUSIC")
-		flite -t "Killing VLC instances"
-		pkill vlc
-		;;
-	"WHAT TIME")
- 		flite -t "The time is $(date "+%l:%M %p")."
-		;;
-	"$name WHAT TIME")
-		flite -t "It is $(date "+%l:%M %p")."
-		;;
-	"WHAT DAY")
-		flite -t "Today is $(date "+%A %B %e")"
-		;;
-	"$name WHAT DAY")
-		flite -t "Today is $(date "+%A %B %e")"
-		;;
-	"COM PU TER")
-		flite -t "My name is $name"
-		;;
+		
 	*)
 		case $lastcommand in
 			"PLAY MUSIC")
@@ -108,7 +109,6 @@ case $ACTION in
 				lastcommand=""
 				;;
 			*)
-				echo "Got nothin"
 				lastcommand=""
 				;;
 		esac				
