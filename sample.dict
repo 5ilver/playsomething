@@ -12,21 +12,9 @@
 2	[LIGHTS]	l ay t s
 2	[PU]	p y uw
 3	[COM]	k ax m
-3	[ME]	m iy
-3	[KENNETH]	k eh n ix th
-3	[KEN]	k eh n
-3	[MACDOUGALL]	m ax k d uw g ax l
-3	[MACLEAN]	m ax k l ey n
-3	[STEVEN]	s t iy v ax n
-3	[STEVE]	s t iy v
-3	[YOUNG]	y ah ng
-3	[FOUR]	f ao r
 3	[BOB]	b aa b
-3	[JOHNSTON]	jh aa n s t ax n
-3	[JOHN]	jh aa n
 3	[JORDAN]	jh ao r d ax n
-3	[JOE]	jh ow
-4	[MUSIC]	m uw s ax k
+4	[MUSIC]	m y uw z ix k
 4	[UP]	ah p
 4	[DOWN]	d aw n
 4	[LEFT]	l eh f
@@ -35,3 +23,4 @@
 4	[WEEK]	w ey k
 4	[DAY]	d ey
 4	[TER]	t eh r
+4	[ME]	m iy
