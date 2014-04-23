@@ -7,7 +7,7 @@ adinrec file.wav
 function julius_speech() {
 command=`julius -quiet -input rawfile -filelist files -C sample.jconf | grep sentence1: | sed -e 's/sentence1: <s> \(.*\) <\/s>/\1/'`
 ACTION=$command
-echo "Julius heard $comand"
+echo "Julius heard $command"
 }
 
 function google_speech() {
@@ -22,11 +22,11 @@ echo "Google heard $query"
 which ffmpeg && encoder="ffmpeg"
 which avconv && encoder="avconv"
 if [ "$encoder" == "" ];then
-	echo "You need a flac encoder. Install ffmpeg or libav-tools (avconv)"
+	echo "You need a flac encoder. Install ffmpeg or libav-tools (avconv) packages."
 	exit 1
 fi;
 if [ ! $(which julius) ]; then
-	echo "You need julius. Install julius and julias-voxforge" 
+	echo "You need julius. Install julius and julias-voxforge packages." 
 	exit 1
 fi
 if [ ! $(which curl) ]; then
@@ -35,6 +35,14 @@ if [ ! $(which curl) ]; then
 fi
 if [ ! $(which flite) ]; then
 	echo "You need flite." 
+	exit 1
+fi
+if [ ! $(which cvlc) ]; then
+	echo "You need cvlc. Install vlc package." 
+	exit 1
+fi
+if [ ! $(which youtube-dl) ]; then
+	echo "You need youtube-dl. Install it from http://rg3.github.io/youtube-dl/" 
 	exit 1
 fi
 
