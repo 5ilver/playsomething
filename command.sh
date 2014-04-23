@@ -17,7 +17,7 @@ else
 	command="${command#$name }"
 	echo "Heard my name. New command \"$command\""
 fi
-if [ "$lastcommand" == "name"]; then
+if [ "$lastcommand" == "$name" ]; then
 	echo "last command was my name, setting command name flag true"
 	namesaid="true"
 fi
@@ -98,6 +98,8 @@ case $command in
 			4) flite -t "Can I help you?" ;;
 			5) flite -t "Need something?" ;;
 		esac
+		
+		lastcommand="$command"
 		;;
 		
 	*)
