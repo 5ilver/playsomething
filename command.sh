@@ -7,6 +7,7 @@ adinrec file.wav
 function julius_speech() {
 command=`julius -quiet -input rawfile -filelist files -C sample.jconf | grep sentence1: | sed -e 's/sentence1: <s> \(.*\) <\/s>/\1/'`
 ACTION=$command
+echo "Julius heard $comand"
 }
 
 function google_speech() {
@@ -14,7 +15,7 @@ rm file.flac -rf > /dev/null 2>&1
 rm stt.txt -rf > /dev/null 2>&1
 $encoder -i file.wav -ar 16000 -acodec flac file.flac > /dev/null 2>&1
 query=`wget -q -U "Mozilla/5.0" --post-file file.flac --header "Content-Type: audio/x-flac; rate=16000" -O - "http://www.google.com/speech-api/v1/recognize?lang=en-us&client=chromium" | cut -d\" -f12`
-echo $query > stt.txt
+echo "Google heard $query"
 }
 
 #set -x 
@@ -43,7 +44,6 @@ name="JORDAN"
 while true; do 
 listen
 julius_speech $ACTION
-echo "heard $ACTION"
 case $ACTION in
 	"$name")
 		let "resp = $RANDOM % 5 +1"
@@ -96,7 +96,7 @@ case $ACTION in
 			"PLAY MUSIC")
 				flite -t "searching"
 				google_speech
-				./playsome.sh "$(cat stt.txt)"
+				./playsome.sh "$query"
 				lastcommand=""
 				;;
 			*)
