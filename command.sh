@@ -1,7 +1,7 @@
 #!/bin/bash
 function listen() {
-adinrec file.wav
-#adinrec file.wav > /dev/null 2>&1
+rm -rf file.wav > /dev/null 2>&1
+adinrec -lv 3000 file.wav > /dev/null 2>&1
 }
 
 function julius_speech() {
