@@ -1,119 +1,138 @@
 #!/bin/bash
+
+function sayit() {
+amixer set Capture toggle 2>&1 > /dev/null
+flite -t "$say"
+amixer set Capture toggle 2>&1 > /dev/null
+}
+
 function listen() {
-rm -rf file.wav > /dev/null 2>&1
-adinrec -lv 3000 file.wav > /dev/null 2>&1
+# :p
+rm speech
+mkfifo speech
+julius -quiet -input mic -C sample.jconf | tee -a speech 2>&1 > /dev/null
 }
 
-function julius_speech() {
-command=`julius -quiet -input rawfile -filelist files -C sample.jconf | grep sentence1: | sed -e 's/sentence1: <s> \(.*\) <\/s>/\1/'`
-ACTION=$command
-echo "Julius heard $command"
-
-if [ "${command#$name}" == "$command" ]; then
-	namesaid="false"
-	echo "Didn't hear my name though"
-else
-	namesaid="true"
-	command="${command#$name }"
-	echo "Heard my name. New command \"$command\""
-fi
-if [ "$lastcommand" == "$name" ]; then
-	echo "last command was my name, setting command name flag true"
-	namesaid="true"
+function detectname() {
+if [ "$command" != "" ]; then
+	#If $command with $name stripped doesn't equal $command then...
+	if [ ! "${command#$name}" == "$command" ]; then
+		namesaid="true"
+		command="${command#$name }"
+		#echo "Heard my name. Setting name flag and processing \"$command\""
+		namesaid="true"
+	fi
 fi
 }
 
-function google_speech() {
-rm file.flac -rf > /dev/null 2>&1
-rm stt.txt -rf > /dev/null 2>&1
-$encoder -i file.wav -ar 16000 -acodec flac file.flac > /dev/null 2>&1
-query=`wget -q -U "Mozilla/5.0" --post-file file.flac --header "Content-Type: audio/x-flac; rate=16000" -O - "http://www.google.com/speech-api/v1/recognize?lang=en-us&client=chromium" | cut -d\" -f12`
-echo "Google heard $query"
-}
 
 #set -x 
-which ffmpeg && encoder="ffmpeg"
-which avconv && encoder="avconv"
-if [ "$encoder" == "" ];then
-	echo "You need a flac encoder. Install ffmpeg or libav-tools (avconv) packages."
-	exit 1
-fi;
+
+#dep checks
 if [ ! $(which julius) ]; then
 	echo "You need julius. Install julius and julias-voxforge packages." 
 	exit 1
 fi
-if [ ! $(which curl) ]; then
-	echo "You need curl." 
-	exit 1
-fi
 if [ ! $(which flite) ]; then
-	echo "You need flite." 
-	exit 1
-fi
-if [ ! $(which cvlc) ]; then
-	echo "You need cvlc. Install vlc package." 
-	exit 1
-fi
-if [ ! $(which youtube-dl) ]; then
-	echo "You need youtube-dl. Install it from http://rg3.github.io/youtube-dl/" 
+	echo "You need flite. Install flite package." 
 	exit 1
 fi
 
 
 name="JORDAN"
 
-while true; do 
-listen
-julius_speech
-case $command in
-	"PLAY MUSIC")
-		echo "Playing music!"
-		if [ "$namesaid" == "true" ]; then
-			flite -t "What would you like me to play?" 
+#throw julius in the background writing to a fifo and let settle
+listen &
+sleep 1
+
+#read from the fifo and process as soon as possible without blocking.
+cat speech | while true; do 
+	read rawcommand
+	command=$(echo $rawcommand | grep sentence1: | sed -e 's/sentence1: <s> \(.*\) <\/s>/\1/')
+	detectname
+	#echo "$command"	
+	case $command in
+		"PLAY MUSIC")
+			if [ "$namesaid" == "true" ]; then
+				#echo "Playing music!"
+				say="What would you like me to play?" 
+				sayit
+				lastcommand="$command"
+				namesaid="false"
+			else
+				#echo "Need to hear my name to play music"
+				lastcommand=""
+			fi
+			;;
+		"STOP MUSIC")
+			if [ "$namesaid" == "true" ]; then
+				say="Killing VLC instances"
+				sayit
+				pkill vlc
+			else
+				#echo "Need to hear my name to stop music"
+				lastcommand=""
+			fi
+			;;
+		"WHAT TIME")
+ 			say="The time is $(date "+%l:%M %p")."
+			sayit
+			;;
+		"WHAT DAY")
+			say="Today is $(date "+%A %B %e")"
+			sayit
+			;;
+		"WHAT UP")
+			say="Not much. Whats up with you?"
+			sayit
+			;;
+		"GO UP")
+			say="Going up"
+			sayit
+			;;
+		"GO DOWN")
+			say="Going down"
+			sayit
+			;;
+		"GO LEFT")
+			say="Going left"
+			sayit
+			;;
+		"GO RIGHT")
+			say="Going right"
+			sayit
+			;;
+		"COM PU TER")
+			say="My name is $name"
+			sayit
+			;;
+		"$name")
+			let "resp = $RANDOM % 5 +1"
+			case $resp in
+				1) say="What?" ;;
+				2) say="Yes?" ;;
+				3) say="sir!" ;;
+				4) say="Can I help you?" ;;
+				5) say="Need something?" ;;
+			esac
+			sayit	
 			lastcommand="$command"
-		else
-			echo "Need to hear my name to play music"
-			lastcommand=""
-		fi
-		;;
-	"STOP MUSIC")
-		flite -t "Killing VLC instances"
-		pkill vlc
-		;;
-	"WHAT TIME")
- 		flite -t "The time is $(date "+%l:%M %p")."
-		;;
-	"WHAT DAY")
-		flite -t "Today is $(date "+%A %B %e")"
-		;;
-	"COM PU TER")
-		flite -t "My name is $name"
-		;;
-	"$name")
-		let "resp = $RANDOM % 5 +1"
-		case $resp in
-			1) flite -t "What?" ;;
-			2) flite -t "Yes?" ;;
-			3) flite -t "sir!" ;;
-			4) flite -t "Can I help you?" ;;
-			5) flite -t "Need something?" ;;
-		esac
-		
-		lastcommand="$command"
-		;;
-		
-	*)
-		case $lastcommand in
-			"PLAY MUSIC")
-				flite -t "searching"
-				google_speech
-				./playsome.sh "$query"
-				lastcommand=""
-				;;
-			*)
-				lastcommand=""
-				;;
-		esac				
-		;;
-esac
+			;;
+			
+		*)
+			case $lastcommand in
+				"PLAY MUSIC")
+					say="searching"
+					sayit
+					#google_speech
+					#./playsome.sh "$query"
+					nohup vlc "http://www.youtube.com/watch?v=oHg5SJYRHA0" 2&>1 > /dev/null &
+					lastcommand=""
+					;;
+				*)
+					#lastcommand=""
+					;;
+			esac				
+			;;
+	esac
 done;
